@@ -18,6 +18,7 @@ public class OTContainer : MonoBehaviour
     /// </summary>
     public Texture texture;
 	public OTContainerSizeTexture[] sizeTextures;
+	public bool generateSprites = false;
 	        		
     protected bool dirtyContainer = true;    
     protected string _name_ = "";	
@@ -26,18 +27,24 @@ public class OTContainer : MonoBehaviour
 	protected Texture _texture = null;
 	
 	
+	
 
     /// <summary>
-    /// Original sheet size
+    /// Sheets/Atlas's original image size
     /// </summary>
     /// <remarks>
-    /// This setting is optional and only used in combination with frameSize when
-    /// the frames do not exactly fill up the texture horizontally and/or vertically.
+    /// <b>When using a sprite sheet</b><br></br>
+    /// This setting is used in combination with frameSize when the frames do not exactly fill up the texture horizontally and/or vertically.
     /// <br></br><br></br>
     /// Sometimes a sheet has some left over space to the right or bottom of the
     /// texture that was used. By setting the original sheetSize and the frameSize, 
     /// the empty left-over space can be calculated and taken into account when
     /// setting the texture scaling and frame texture offsetting.
+    /// <br></br><br></br>
+    /// <b>When using an atlas</b><br></br>
+    /// Because the atlas data file does not have info about the atlas texture's original size, the uv mapping can be off
+    /// if the by Unity3D imported dimensions are not equal to the original. When you set this size to the original dimensions
+    /// Orthello will always know how to uv-map correctly.
     /// </remarks>
     public Vector2 sheetSize
     {
@@ -144,7 +151,12 @@ public class OTContainer : MonoBehaviour
         return texture;
     }
 	
-	
+	public void SetTexture(Texture tex)
+	{
+		texture = tex;
+		Reset(true);
+	}	
+		
 	Texture _defaultTexture;
 	void CheckSizeFactor()
 	{
@@ -187,10 +199,13 @@ public class OTContainer : MonoBehaviour
 		else
 			return -1;		
     }
-	
-	
+		
 	protected void Awake()
-	{		
+	{	
+        _name_ = name;
+        _sheetSize_ = sheetSize;
+		_texture = texture;
+		
 #if UNITY_EDITOR
 		if (!Application.isPlaying)
 			UnityEditor.PrefabUtility.RecordPrefabInstancePropertyModifications(this);
@@ -200,14 +215,7 @@ public class OTContainer : MonoBehaviour
     // Use this for initialization
     
     protected void Start()
-    {
-		
-        // initialize attributes
-        // initialize attributes
-        _name_ = name;
-        _sheetSize_ = sheetSize;
-		_texture = texture;
-		
+    {						
         if (name == "")
 		{
             name = "Container (id=" + this.gameObject.GetInstanceID() + ")";
@@ -216,6 +224,10 @@ public class OTContainer : MonoBehaviour
 				UnityEditor.PrefabUtility.RecordPrefabInstancePropertyModifications(this);
 #endif										
 		}		
+		
+        if (!registered || !Application.isPlaying)
+            RegisterContainer();				
+		
     }
 
     /// <summary>
@@ -236,7 +248,7 @@ public class OTContainer : MonoBehaviour
             return frames[index];
         else
         {
-            throw new System.IndexOutOfRangeException("Frame index out of bounds ["+index+"]");
+            return frames[0];
         }
     }
 	
@@ -291,15 +303,38 @@ public class OTContainer : MonoBehaviour
 		return new Frame();
 	}
 	
+	/// <summary>
+	/// Generates sprites for all frames in this container
+	/// </summary>
+	/// <remarks>
+	/// An empty game object will be created at 0,0,0 with a localscale of 1,1,1 that will hold
+	/// all sprites. The sprites will be named according to their frame names.
+	/// </remarks>
+	public void GenerateSprites()
+	{
+		generateSprites = false;
+		GameObject root = new GameObject(name);
+		root.transform.position = Vector3.zero;
+		root.transform.localScale = Vector3.one;
+		root.transform.rotation = Quaternion.identity;
+			
+		for (int i=0; i<frames.Length; i++)
+		{
+			OTSprite sprite = OT.CreateSprite(OTObjectType.Sprite);
+			sprite.spriteContainer = this;
+			sprite.name = frames[i].name;
+			sprite.frameIndex = i;
+			sprite.ForceUpdate();
+			sprite.ChildOf(root);			
+		}
+	}
+	
 	
     // Update is called once per frame
     
-    protected void Update()
+    protected virtual void Update()
     {		
-        if (!OT.isValid) return;
-
-        if (!registered || !Application.isPlaying)
-            RegisterContainer();
+        if (!OT.isValid) return;		
 
         if (frames.Length == 0 && !dirtyContainer)
             dirtyContainer = true;
@@ -338,6 +373,9 @@ public class OTContainer : MonoBehaviour
 			
             dirtyContainer = false;
         }
+		
+		if (isReady && generateSprites)
+			GenerateSprites();		
     }
 
     void OnDestroy()
@@ -349,13 +387,19 @@ public class OTContainer : MonoBehaviour
 	public virtual void Reset(bool doUpdate)
 	{
 		dirtyContainer = true;
-		
+				
 		OTObject[] sprites = OT.ObjectsOfType<OTSprite>();
 		for (int i=0; i<sprites.Length; i++)
 			sprites[i].Reset();		
 		
 		if (doUpdate)
 			Update();
+		
+	}
+	
+	public virtual void Reset()
+	{
+		Reset(true);
 	}
 
 }

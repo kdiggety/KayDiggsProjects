@@ -17,9 +17,7 @@
 // Mover behaviour class
 // ------------------------------------------------------------------------
 
-
 /*
-
     // mover waypoint
     private var wayPoints:Array  = [ new Vector2(-729.00f,866.00f), new Vector2(-204.00f,866.00f),new Vector2(-204.00f, -540.00f), 
            new Vector2(247.00f ,-540.00f), new Vector2(247.00f,866.00f), new Vector2(757.00f,866.00f),
@@ -162,5 +160,4 @@
             }
         }
     }
-
 */

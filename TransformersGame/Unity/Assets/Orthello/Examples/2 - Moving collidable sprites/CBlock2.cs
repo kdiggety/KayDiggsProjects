@@ -29,7 +29,6 @@ public class CBlock2 : MonoBehaviour {
         sprite.onCollision = OnCollision;
         // Set this block's tinting to the start color
         sprite.tintColor = startColor;
-        // Register this material with Orthello so we can re-use it later
     }
 
     // Update is called once per frame

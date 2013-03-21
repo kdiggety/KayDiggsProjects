@@ -42,7 +42,6 @@ public class CAsteroid3 : MonoBehaviour {
         if (sprite.size.x < 50 || sprite.size.y < 50)
         {
             sprite.Stop();
-			sprite.enabled = false;
             sprite.depth = 100;
             sprite.frameIndex = 0;
             sprite.rotation += 90 * Time.deltaTime;
@@ -64,6 +63,9 @@ public class CAsteroid3 : MonoBehaviour {
         }
         // Destroy the asteroid as ist moves out of view
         if (sprite.outOfView)
+		{
+			sprite.otCollider.enabled = true;
             OT.DestroyObject(sprite);
+		}
 	}
 }

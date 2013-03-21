@@ -18,6 +18,9 @@ using System.Collections;
 
 public class CExample4 : MonoBehaviour {
 
+    
+    public CMover4 moverPrototype = null;   // movesprite prototype
+
     bool initialized = false;               // intialization indicator
     bool zooming = false;                   // zooming indicator
     float zoomSpeed = 4f;                   // how fast do we zoom in/out
@@ -30,8 +33,8 @@ public class CExample4 : MonoBehaviour {
         // lets create 10 mover sprites
         for (int i = 0; i < 10; i++)
         {
-            CMover4 mov = OT.CreateSprite("mover").GetComponent<CMover4>();
-            OTSprite s = mov.GetComponent<OTSprite>();
+            OTSprite s = OT.CreateSprite("mover");
+            CMover4 mov = s.GetComponent<CMover4>();
             // hook up onInput delegate to handle clicking on a mover
             s.onInput = OnInput;
         }

@@ -77,8 +77,7 @@ public function AddDebree(debreeObject:OTAnimatingSprite)
 public function OnCollision(owner:OTObject)
 {
     // check if the asteroid we are colliding with is not in our
-    // ignore debree list.
-	
+    // ignore debree list.		
 	var found:boolean = false;
 	for (var i:int = 0; i<debree.length; i++)
 		if (debree[i] == owner.collisionObject)

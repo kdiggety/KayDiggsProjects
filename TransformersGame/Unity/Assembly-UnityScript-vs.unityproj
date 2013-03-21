@@ -18,7 +18,7 @@
 	<DebugType>full</DebugType>
 	<Optimize>false</Optimize>
 	<OutputPath>Temp\bin\Debug\</OutputPath>
-	<DefineConstants>DEBUG;TRACE;UNITY_WEBPLAYER;WEBPLUG;ENABLE_MICROPHONE;ENABLE_IMAGEEFFECTS;ENABLE_WEBCAM;ENABLE_AUDIO_FMOD;ENABLE_NETWORK;ENABLE_MONO;ENABLE_PHYSICS;ENABLE_TERRAIN;ENABLE_CACHING;ENABLE_SUBSTANCE;ENABLE_GENERICS;ENABLE_CLOTH;ENABLE_MOVIES;ENABLE_AUDIO;ENABLE_WWW;ENABLE_SHADOWS;ENABLE_DUCK_TYPING;UNITY_4_0_1;UNITY_4_0;ENABLE_PROFILER;UNITY_EDITOR</DefineConstants>
+	<DefineConstants>DEBUG;TRACE;UNITY_WEBPLAYER;WEBPLUG;ENABLE_MICROPHONE;ENABLE_IMAGEEFFECTS;ENABLE_WEBCAM;ENABLE_AUDIO_FMOD;ENABLE_NETWORK;ENABLE_MONO;ENABLE_PHYSICS;ENABLE_TERRAIN;ENABLE_CACHING;ENABLE_SUBSTANCE;ENABLE_GENERICS;ENABLE_CLOTH;ENABLE_MOVIES;ENABLE_AUDIO;ENABLE_WWW;ENABLE_SHADOWS;ENABLE_DUCK_TYPING;UNITY_4_1_0;UNITY_4_1;ENABLE_PROFILER;UNITY_EDITOR</DefineConstants>
 	<ErrorReport>prompt</ErrorReport>
 	<WarningLevel>4</WarningLevel>
 	<NoWarn>0169</NoWarn>
@@ -37,10 +37,10 @@
     <Reference Include="System.XML" />
 	<Reference Include="System.Core" />
 	<Reference Include="UnityEngine">
-	  <HintPath>/Applications/Unity/Unity.app/Contents/Frameworks/Managed/UnityEngine.dll</HintPath>
+	  <HintPath>C:/Program Files (x86)/Unity/Editor/Data/Managed/UnityEngine.dll</HintPath>
 	</Reference>
 	<Reference Include="UnityEditor">
-	  <HintPath>/Applications/Unity/Unity.app/Contents/Frameworks/Managed/UnityEditor.dll</HintPath>
+	  <HintPath>C:/Program Files (x86)/Unity/Editor/Data/Managed/UnityEditor.dll</HintPath>
 	</Reference>
   </ItemGroup>
   <ItemGroup>
@@ -58,16 +58,27 @@
      <Compile Include="Assets\Orthello\Examples\7 - Tweening\JSExample7.js" />
      <Compile Include="Assets\Orthello\Examples\7 - Tweening\JSStar7_1.js" />
      <Compile Include="Assets\Orthello\Examples\7 - Tweening\JSStar7_2.js" />
+     <Compile Include="Assets\Orthello\Examples\Pro 1 - Sprite Batching\JSProExample1.js" />
+     <Compile Include="Assets\Orthello\Examples\Pro 1 - Sprite Batching\JSProExample1_TintedAlpha.js" />
+     <Compile Include="Assets\Orthello\Examples\Pro 2 - Actions\JSProExample2.js" />
+     <Compile Include="Assets\Orthello\Examples\Pro 3 - Movement on a Path\JSProExample3.js" />
+     <Compile Include="Assets\Orthello\Examples\Pro 3 - Movement on a Path\JSProExample3a.js" />
+     <Compile Include="Assets\Orthello\Examples\Pro 4 - Paralax Background\JSProExample4.js" />
+     <Compile Include="Assets\Orthello\Examples\Pro 6 - TILED - TileMap Support\JSProExample6.js" />
      <None Include="Assets\Orthello\Examples\0 - Simple Examples\TextSprites\lorem.txt" />
      <None Include="Assets\SpriteAtlases\baby_optimus_prime_walking_left.xml" />
+     <None Include="Assets\Orthello\Examples\Pro 5 - Sprite Sheet Generation\-how-to-create-a-sheet.txt" />
      <None Include="Assets\Orthello\Examples\0 - Simple Examples\TextSprites\Atlases\russian.txt" />
      <None Include="Assets\Orthello\Examples\4 - Follow Target View\-orthello-config.xml" />
+     <None Include="Assets\Orthello\Examples\Pro 5 - Sprite Sheet Generation\Mech\-orthello-config.xml" />
      <None Include="Assets\Orthello\-Read-Me.txt" />
+     <None Include="Assets\Orthello\Examples\Pro 6 - TILED - TileMap Support\TiledSupport-1.xml" />
      <None Include="Assets\Orthello\Examples\0 - Simple Examples\TextSprites\orthello-font-30.txt" />
      <None Include="Assets\Orthello\-Update-Upgrade info.txt" />
      <None Include="Assets\Orthello\Examples\0 - Simple Examples\TextSprites\Atlases\img.xml" />
      <None Include="Assets\Orthello\Examples\0 - Simple Examples\TextSprites\Atlases\glyph.xml" />
      <None Include="Assets\Orthello\Examples\0 - Simple Examples\TextSprites\Atlases\chalk.xml" />
+     <None Include="Assets\Orthello\Examples\Pro 6 - TILED - TileMap Support\TiledSupport-2.xml" />
      <None Include="Assets\Orthello\Examples\0 - Simple Examples\Multi Resolution Art\atlas.xml" />
      <None Include="Assets\Orthello\Standard Assets\OT\_Base\TintedAlpha.shader" />
      <None Include="Assets\Orthello\Examples\0 - Simple Examples\RotateTowards\-read-me.txt" />

@@ -21,6 +21,12 @@
 // ------------------------------------------------------------------------
 
 /*
+function Start()
+{
+	// set gravity manually
+	Physics.gravity = new Vector3(0,-450,0);
+}
+
 // rotate a physical static object
 function Rotate(name:String)
 {

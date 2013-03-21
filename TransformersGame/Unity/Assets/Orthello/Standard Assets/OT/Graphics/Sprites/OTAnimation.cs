@@ -222,6 +222,9 @@ public class OTAnimation : MonoBehaviour
 	
 	protected void Awake()
 	{
+        _duration_ = _duration;
+        _fps_ = _fps;
+        _name_ = name;
 #if UNITY_EDITOR
 		if (!Application.isPlaying)
 			UnityEditor.PrefabUtility.RecordPrefabInstancePropertyModifications(this);
@@ -232,10 +235,6 @@ public class OTAnimation : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        _duration_ = _duration;
-        _fps_ = _fps;
-
-        _name_ = name;
         if (name == "")
 		{
             name = "Animation (id=" + this.gameObject.GetInstanceID() + ")";
@@ -435,8 +434,11 @@ public class OTAnimation : MonoBehaviour
 			{
 	            frames = GetFrames();
 	            dirtyAnimation = false;
-	            _fps = frames.Length / _duration;
-	            _fps_ = _fps;
+				if (_duration == _duration_)
+				{
+                    _duration = (float)frames.Length / _fps;
+                    _duration_ = _duration;
+				}
 			}
         }
 
@@ -447,7 +449,7 @@ public class OTAnimation : MonoBehaviour
                 if (_duration_ != _duration)
                 {
                     _duration_ = _duration;
-                    _fps = frames.Length / _duration;
+                    _fps = (float)frames.Length / _duration;
                     _fps_ = _fps;
                 }
             }
@@ -457,7 +459,7 @@ public class OTAnimation : MonoBehaviour
                 if (_fps_ != _fps)
                 {
                     _fps_ = _fps;
-                    _duration = frames.Length / _fps;
+                    _duration = (float)frames.Length / _fps;
                     _duration_ = _duration;
                 }
             }

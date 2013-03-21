@@ -20,14 +20,13 @@
 // Main Example 5 Demo class
 // ------------------------------------------------------------------------
 
-/*
-
     public var greenStarsAnimation:Texture;     // texture with rotating star frames
     public var walkingManAnimation:Texture;     // texture with walking man frames
     public var whiteTile:Texture;               // Just a white wyrmtale tile
 	public var stage1:GameObject;				// stage1 menu item game object	
 	public var stage2:GameObject;				// stage2 menu item game object
 	
+/*	                
     private var initialized:boolean = false;    // initialization indicator
     private var appMode:int = 1;                // application mode ( 1 = stars, 2 = walking man )
 
@@ -64,8 +63,8 @@
         // To create the animating star we first have to create the sprite sheet object that will 
         // hold our texture/animation frames
         var sheet:OTSpriteSheet = OT.CreateObject(OTObjectType.SpriteSheet).GetComponent("OTSpriteSheet");
-	   //  Give our sheet a name
-	   sheet.name = "mySheet";
+	    //  Give our sheet a name
+	    sheet.name = "mySheet";
         // Assign texture
         sheet.texture = greenStarsAnimation;
         // Specify how many columns and rows we have (frames)
@@ -106,8 +105,12 @@
         // Lets start at a random frame
         star.startAtRandomFrame = true;
         // Lets auto-start this animation
-        star.playOnStart = true;       
-
+        star.playOnStart = true;  
+        star.visible = false;     
+        star.name = "star";
+        // assign the sheet to the sprite as well to avoid a material blinking error
+		star.spriteContainer = sheet;
+        
         // INFO : This animation 'star' will be center (0,0) positioned and act as a prototype
         // to create more moveing and animating (additive) 'stars'.
     }
@@ -188,6 +191,8 @@
         man.playOnStart = true;
         // Give our sprite a name
         man.name = "man";
+        // assign the sheet to the sprite as well to avoid a material blinking error
+        man.spriteContainer = sheet;
 
         // INFO : In this class Update() method, we will check the location of
         // the mouse pointer and play the corresponding direction animation
@@ -197,6 +202,7 @@
     // (Re)Create our objects
     function CreateObjects()
     {
+        OT.objectPooling = false;    
         // Destroy all objects, containers and animations
         OT.DestroyAll();
         // Clear our active stars list
@@ -234,9 +240,14 @@
         if (!initialized)
             Initialize();
 
+		// if containers that were created are not ready yet, lets hold.
+		if (!OT.ContainersReady())
+			return;
+
         switch (appMode)
         {
             case 1:
+            	star.visible = true;
                 // we are in the star stage so increase star creation wait time
                 starTime += Time.deltaTime;
                 // check if we may create a new star
@@ -245,7 +256,7 @@
                     // Lets create one, reset the wait time
                     starTime = 0;
                     // Create a copy of out animating star
-                    var newStar:OTAnimatingSprite = Instantiate(star) as OTAnimatingSprite;
+                    var newStar:OTAnimatingSprite = OT.CreateSprite(star) as OTAnimatingSprite;
                     // Put this star in our active stars list
                     stars.Add(newStar);
                     // Give it a random size
@@ -257,6 +268,7 @@
                     newStar.depth = ((1 / newStar.size.x)*100);
                     // Set material to additive
                     newStar.additive = true;
+                    newStar.frameIndex = 0;
                 }
 
                 // Lets loop all active stars
@@ -336,5 +348,4 @@
             }		
 		
 	}
-
 */

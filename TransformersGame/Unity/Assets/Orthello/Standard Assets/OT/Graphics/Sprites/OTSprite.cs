@@ -120,6 +120,12 @@ public class OTSprite : OTObject
             else
                 return image;
         }
+		set
+		{
+			material.mainTexture = value;
+			_image = value;
+			_image_ = _image;
+		}
     }
 
     /// <summary>
@@ -167,8 +173,13 @@ public class OTSprite : OTObject
         }
         set
         {
-            _frameIndex = value;
-			Clean();
+			if (_frameIndex!=value)
+			{
+	            _frameIndex = value;
+				_frameName = "";
+				_frameName_ = "";
+				Clean();
+			}
         }
     }
 	
@@ -843,6 +854,12 @@ public class OTSprite : OTObject
 	                        {
 	                            oSize = fr.size * OT.view.sizeFactor;
 	                            Vector2 nOffset = fr.offset * OT.view.sizeFactor;
+								
+								if (flipHorizontal)
+									nOffset.x = (fr.imageSize.x * OT.view.sizeFactor) - oSize.x - nOffset.x;
+								if (flipVertical)
+									nOffset.y = (fr.imageSize.y * OT.view.sizeFactor) - oSize.y - nOffset.y;								
+								
 	                            if (_baseOffset.x != nOffset.x || _baseOffset.y != nOffset.y)
 	                            {
 	                                offset = nOffset;
@@ -863,8 +880,13 @@ public class OTSprite : OTObject
 	                            oSize = fr.size * OT.view.sizeFactor;
 								
 	                            imageSize = new Vector2(_sx * fr.imageSize.x * OT.view.sizeFactor, _sy * fr.imageSize.y * OT.view.sizeFactor);								
-	                            Vector2 nOffset = new Vector2(_sx * fr.offset.x * OT.view.sizeFactor, _sy * fr.offset.y * OT.view.sizeFactor);
+	                            Vector2 nOffset = new Vector2(_sx * fr.offset.x * OT.view.sizeFactor, _sy * fr.offset.y * OT.view.sizeFactor);								
 								
+								if (flipHorizontal)
+									nOffset.x = (fr.imageSize.x * OT.view.sizeFactor) - oSize.x - nOffset.x;
+								if (flipVertical)
+									nOffset.y = (fr.imageSize.y * OT.view.sizeFactor) - oSize.y - nOffset.y;
+																
                                 offset = nOffset;
                                 position = _position;
 	                        }
@@ -1027,7 +1049,7 @@ public class OTSprite : OTObject
 
     
     protected override void Awake()
-    {
+    {		
 		if (_frameIndex<0) 
 			_frameIndex = 0;
 		
@@ -1074,7 +1096,6 @@ public class OTSprite : OTObject
 		lastMat = mat;					
 		return mat;
 	}
-	
 	
     protected override void Start()
     {

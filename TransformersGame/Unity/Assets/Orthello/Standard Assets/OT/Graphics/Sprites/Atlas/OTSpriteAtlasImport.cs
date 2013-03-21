@@ -92,10 +92,9 @@ public class OTSpriteAtlasImport : OTSpriteAtlas
     protected virtual OTAtlasData[] Import()
     {
         return new OTAtlasData[] { };
-    }
-
-    
-    new protected void Update()
+    }		
+	
+    protected override void Update()
     {
 		
 		bool atlasChanged = false;

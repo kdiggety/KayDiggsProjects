@@ -116,7 +116,9 @@ public class OTView : MonoBehaviour
             if (!alwaysPixelPerfect) Update();
         }
     }
-
+	
+	
+	OTObject movementObject = null;
     /// <summary>
     /// Target object's position will followed.
     /// </summary>
@@ -129,6 +131,8 @@ public class OTView : MonoBehaviour
         set
         {
             _movementTarget = value;
+			if (value!=null)
+				movementObject = movementTarget.GetComponent<OTObject>();
             Update();
         }
     }
@@ -192,12 +196,18 @@ public class OTView : MonoBehaviour
             || r2.yMax < r1.yMin
             );
     }
-
+	
+	/// <summary>
+    /// Checks if a specific 2D coordinate is in view.
+	/// </summary>
+	public bool Contains(Vector2 v)
+    {
+        return IntersectRect(worldRect, new Rect(v.x,v.y,0,0));
+    }
+		
     /// <summary>
     /// Checks if a specific object is in view.
     /// </summary>
-    /// <param name="o">Object to check</param>
-    /// <returns></returns>
     public bool Contains(OTObject o)
     {
         return IntersectRect(worldRect, o.rect);
@@ -316,7 +326,8 @@ public class OTView : MonoBehaviour
 				}
             }
             else
-              return customSize;        }
+              return customSize;        
+              }
     }
 	
     public void InitView()
@@ -380,6 +391,9 @@ public class OTView : MonoBehaviour
         }
         else
             sizeFact = 1;
+		
+		if (movementTarget!=null)
+			movementObject = movementTarget.GetComponent<OTObject>();
 
         GetWorldRect();
 		recordPrefab = true;
@@ -667,7 +681,7 @@ public class OTView : MonoBehaviour
 		else
           	sizeFact = 1;
 						
-        if (_zoom_ != _zoom)
+        if (_zoom_ != _zoom || !Application.isPlaying)
 		{
 			getRect = true;
             // check camera size
@@ -683,15 +697,22 @@ public class OTView : MonoBehaviour
 	        if (movementTarget != null)
 			{
 				Vector2 targetPos;
-				if (OT.world == OT.World.WorldTopDown2D)
-					targetPos = new Vector2(movementTarget.transform.position.x,movementTarget.transform.position.z);
+				if (movementObject!=null)
+					targetPos = movementObject.position;
 				else
-					targetPos = movementTarget.transform.position;
+				{
+					if (OT.world == OT.World.WorldTopDown2D)
+						targetPos = new Vector2(movementTarget.transform.position.x,movementTarget.transform.position.z);
+					else
+						targetPos = movementTarget.transform.position;				
+				}
 				
 				if (!position.Equals(targetPos))
 				{
 					position = targetPos;
 					UpdateWorldRect();
+					if (onScreenChange!=null)
+						onScreenChange();					
 				}
 			}	
 	        if (rotationTarget != null)
@@ -858,13 +879,10 @@ public class OTView : MonoBehaviour
 		// coud be in edit mode and just captured the right screen dimensions
 		if (!Application.isPlaying)
 		{
-			if (OT.view.alwaysPixelPerfect)
-			{
-		        if (camera.orthographicSize != resSize * (Mathf.Pow(2, _zoom * -1)))
-		            camera.orthographicSize = resSize * Mathf.Pow(2, _zoom * -1);
-			}
+	        if (camera.orthographicSize != resSize * (Mathf.Pow(2, _zoom * -1)))
+	            camera.orthographicSize = resSize * Mathf.Pow(2, _zoom * -1);
 		}		
-        //GUI.Box(new Rect((Screen.width / 2) - 50, (Screen.height / 2) - 50, 100, 100), "");
+        // GUI.Box(new Rect((Screen.width / 2) - 50, (Screen.height / 2) - 50, 100, 100), "");
     }
 #endif
 

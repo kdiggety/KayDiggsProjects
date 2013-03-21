@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Xml;
 
 /// <summary>
-/// Sprite altlas imported from a Cocos2D XML data file
+/// Sprite altlas imported from a Zwoptex XML data file
 /// </summary>
 /// <remarks>
 /// Suports trimmed and rotated images. Make sure the data file is saved with the .xml extension

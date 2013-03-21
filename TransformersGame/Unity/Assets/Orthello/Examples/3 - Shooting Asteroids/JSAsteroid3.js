@@ -45,12 +45,13 @@ function Update () {
     if (sprite.size.x < 50 || sprite.size.y < 50)
     {
 		sprite.Stop();
-		sprite.enabled = false;
 		sprite.depth = 100;
 		sprite.frameIndex = 0;
 		sprite.rotation += 90 * Time.deltaTime;
 		if (sprite.size.x < 10 || sprite.size.y < 10)
 		{
+			if (sprite.otCollider.enabled)
+				sprite.otCollider.enabled = false;
 			sprite.spriteContainer = sheet1;
 			sprite.size = sprite.size * (1f - (0.99f * Time.deltaTime));
 		}
@@ -58,10 +59,16 @@ function Update () {
             sprite.size = sprite.size * (1f - (0.95f * Time.deltaTime));
         // If the asteroid is smaller than 2 pixels, destroy it.
         if (sprite.size.x < 2 || sprite.size.y < 2)
+        {
+			sprite.otCollider.enabled = true;
             OT.DestroyObject(sprite);
+        }
     }
     // Destroy the asteroid as ist moves out of view
     if (sprite.outOfView)
+    {
+		sprite.otCollider.enabled = true;
         OT.DestroyObject(sprite);
+    }
 }
 */

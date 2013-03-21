@@ -60,9 +60,8 @@ function MoveStars()
     if (mode == 0)
     {
         easeIdx++;
-        if (easeIdx == easings.Length)
+        if (easeIdx == easings.length)
             easeIdx = 0;
     }
 }
-
 */

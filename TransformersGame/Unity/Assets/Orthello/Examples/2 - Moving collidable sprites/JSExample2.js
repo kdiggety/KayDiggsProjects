@@ -9,7 +9,7 @@
 //
 // If you would like to test the JS examples or use the framework in combination
 // with Javascript coding, you will have to move the /Orthello/Standard Assets folder
-// to the / (root).
+// to the / (root) using the Unity editor.
 //
 // This code was commented to prevent compiling errors when project is
 // downloaded and imported using a package.
@@ -21,7 +21,6 @@
 // ------------------------------------------------------------------------
 
 /*
-
 private var blockPrototype:OTSprite;     // prototype to create blocks
 private var starPrototype:OTSprite;      // prototype to create stars
 
@@ -143,5 +142,4 @@ function Update () {
 	if (!initialized)
 		Initialize();
 }
-
 */

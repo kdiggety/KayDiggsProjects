@@ -102,5 +102,21 @@ public class OTObjectType {
         }
     }
 	
+    public static string ClippingAreaSprite
+    {
+        get
+        {
+            return "ClippingAreaSprite";
+        }
+    }
+	
+    public static string ClipSprite
+    {
+        get
+        {
+            return "ClipSprite";
+        }
+    }
+	
 	
 }

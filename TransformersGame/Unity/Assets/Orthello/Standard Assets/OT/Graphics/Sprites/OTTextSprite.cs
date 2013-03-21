@@ -28,7 +28,7 @@ public class OTTextSprite : OTSprite
 	Vector3[] verts = new Vector3[] {};
 	Vector2[] _uv = new Vector2[] {};
 	int[] tris = new int[] {};
-	
+			
 	long GetBytes()
 	{
 		if (textFile!=null)
@@ -67,6 +67,31 @@ public class OTTextSprite : OTSprite
 		return ""+idy;
 	}
 
+	public Vector2 CursorPosition(IVector2 pos)
+	{
+		if (text == "")
+			return transform.position;		
+		
+		Rect r = worldRect;
+		Vector2 p = new Vector2(r.xMin, r.yMin + r.height/2);
+		
+		int px = 0;
+		int tx = 0;
+		for (int i=0; i<sizeChars.Length; i++)
+		{
+			if (i<sizeChars.Length && i<pos.x)
+				px+=(sizeChars[i]);
+			tx+=(sizeChars[i]);
+		}		
+		
+		if (tx>0 && px >0)
+			return p + new Vector2((r.width/tx) * px,0);
+		else
+			return transform.position;
+	}
+		
+	int[] sizeChars = new int[]{};
+	
 	int lineHeight = 0;
 	void ParseText()
 	{
@@ -89,16 +114,26 @@ public class OTTextSprite : OTSprite
 		if (data!=null && data.frameSize.y>0 && lineHeight == 0)
 			lineHeight = (int)data.frameSize.y;
 				
+		
+		sizeChars = new int[]{};
+		System.Array.Resize<int>(ref sizeChars, chars.Length);
+		int ci = 0;
+				
 		OTTextAlinea alinea = new OTTextAlinea(yPosition, lineHeight);		
 		foreach(char c in chars) {
 								
-			if (c=='\r') continue;
+			if (c=='\r') 
+			{
+				sizeChars[ci++] = 0;
+				continue;
+			}
 			if (c=='\n')
 			{
 				alinea.End();
 				_parsed.Add(alinea);
 				yPosition -= dy;				
 				alinea = new OTTextAlinea(yPosition, lineHeight);				
+				sizeChars[ci++] = 0;
 				continue;
 			}			
 			data = atlas.DataByName(""+c);
@@ -147,6 +182,18 @@ public class OTTextSprite : OTSprite
 				}								
 				else
 				   alinea.NextWord(data);
+				
+				
+				string dx = data.GetMeta("dx");
+				int width = 0;
+				if (dx=="")
+					width = (int)(data.offset.x + data.size.x);
+				else
+					width = System.Convert.ToUInt16(dx);
+				
+				if (width == 0) width = 30;				
+				sizeChars[ci++] = width;				
+				
 			}						
 		}
 		alinea.End();
@@ -268,7 +315,7 @@ public class OTTextSprite : OTSprite
     
     protected override string GetTypeName()
     {
-        return "Text";
+        return "TextSprite";
     }
 			
     protected override void HandleUV()

@@ -66,8 +66,7 @@ public class OT : MonoBehaviour
 	public bool _debug = false;
 	public bool _reset = false;	
 	public bool startPassive = false;
-	
-	public static string version  = "2.6.3";
+	public static string version  = "2.7";
 	
 	static bool _passive = false;
 	static bool _createPassive = false;
@@ -149,7 +148,12 @@ public class OT : MonoBehaviour
 			_painterAlgorithm = value;
 		}
 	}
-	
+
+	/// <summary>
+	/// Orthello tries to load the container and sprite textures dynamicly from this Resources folder
+	/// </summary>
+	public static string textureResourceFolder = "";
+		
 	/// <summary>
 	/// Sizing factor that is used when sizing sprites
 	/// </summary>
@@ -304,6 +308,22 @@ public class OT : MonoBehaviour
 		}
 	}
 	
+    public static bool AnimationsReady()
+    {
+        if (!OT.isValid) return false;
+        for (int c = 0; c < animationCount; c++)
+        {
+            OTAnimation an = instance.animationList[c];
+            if (!an.isReady) 
+			{
+				if (an.enabled == false)
+					an.SendMessage("Update");
+				return false;
+			}					
+        }
+		return true;
+    }	
+	
     /// <summary>
     /// Check if all containers are ready.
     /// </summary>
@@ -314,11 +334,19 @@ public class OT : MonoBehaviour
         for (int c = 0; c < containerCount; c++)
         {
             OTContainer co = instance.containerList[c];
-            if (!co.isReady) return false;
+            if (!co.isReady) 
+			{
+				if (!co.enabled)
+					co.SendMessage("Update");
+				return false;
+			}
         }
 		return true;
     }
-			
+		
+	/// <summary>
+	/// In mobile device mode, allows multi finger/object dragging
+	/// </summary>
 	public static bool multiDrag
 	{
 		get
@@ -344,6 +372,99 @@ public class OT : MonoBehaviour
 	}
 	
 	/// <summary>
+	/// Get world bounds of a game object
+	/// </summary>
+	public static Bounds GetBounds(GameObject g)
+	{	
+		OTSprite spr = g.GetComponent<OTSprite>();
+		MeshRenderer[] renderers = g.GetComponentsInChildren<MeshRenderer>();
+		Bounds b = new Bounds(Vector3.zero, Vector3.zero);
+		bool first = true;
+		if (spr!=null)
+		{
+			b = spr.otRenderer.bounds;
+			first = false;
+		}
+		else
+			b.center = g.transform.position;
+		
+		foreach (MeshRenderer r in renderers)
+		{
+			if (first)
+			{
+				b = r.bounds;
+				first = false;
+			}
+			else
+				b.Encapsulate(r.bounds);						
+		}														
+		return b;
+	}
+	
+	/// <summary>
+	/// Get world bounds of orthello object
+	/// </summary>
+	public static Bounds GetBounds(OTObject o)
+	{	
+		return GetBounds(o.gameObject);
+	}
+
+	
+	/// <summary>
+	/// True when a clipped item is visible within the clipped rectangle
+	/// </summary>
+	public static bool ClippedShowing(GameObject g)
+	{
+		if (isValid)
+			return instance._ClippedShowing(g);		
+		return false;
+	}
+	
+	/// <summary>
+	/// Unclips this parent and childs (and remove the clip-camera)
+	/// </summary>
+	public static void UnClip(GameObject parent)
+	{
+		if (isValid)
+			instance._UnClip(parent);		
+	}
+	/// <summary>
+	/// moves the clipped area of a clipped parent
+	/// </summary>
+	public static void ClipMove(GameObject parent, Rect clipRect)
+	{
+		if (isValid)
+			instance._ClipMove(parent, clipRect);		
+	}
+		
+	/// <summary>
+	/// Clips using the provided clipRect (world coords) using a new camera
+	/// </summary>
+	/// <remarks>
+	/// The parent and all of its children will be linked to the new camera.
+	/// Gameobjects that are in the exclude array will not be linked.
+	/// clipLayer refers to the Unity Layer that should be used.
+	/// </remarks>
+	public static Camera Clip(Rect clipRect, GameObject parent, int clipLayer, GameObject[] exclude)
+	{
+		if (isValid)
+			return instance._Clip(clipRect, parent, clipLayer, new List<GameObject>(exclude));
+		return null;
+	}
+		
+	/// <summary>
+	/// Clips using the provided clipRect (world coords) using a new camera
+	/// </summary>
+	/// <remarks>
+	/// The parent and all of its children will be linked to the new camera.
+	/// clipLayer refers to the Unity Layer that should be used.
+	/// </remarks>
+	public static Camera Clip(Rect clipRect, GameObject parent, int clipLayer)
+	{
+		return Clip(clipRect, parent, clipLayer, new GameObject[]{});
+	}
+	
+	/// <summary>
 	/// Finds an orthello child object based on the begin of a name
 	/// </summary>
 	public static OTObject FindChild(GameObject go, string name)
@@ -359,11 +480,15 @@ public class OT : MonoBehaviour
 		}
 		return null;
 	}
+
+	
+	/// <summary>
+	/// Finds an orthello child object based on the begin of a name
+	/// </summary>
 	public static OTObject FindChild(OTObject o, string name)
 	{
 		return FindChild(o.gameObject,name);
 	}	
-	
 	
 	static bool _isValid = false;
     /// <summary>
@@ -440,7 +565,7 @@ public class OT : MonoBehaviour
     }
 
     /// <summary>
-    /// 
+    /// Number of registered Orthello objects
     /// </summary>
     public static int objectCount
     {
@@ -489,7 +614,11 @@ public class OT : MonoBehaviour
         get
         {
             if (isValid)
+			{
+				if (instance._view == null)
+					instance.GetView();
                 return instance._view;
+			}
             else
                 return null;
         }
@@ -574,7 +703,38 @@ public class OT : MonoBehaviour
     /// <param name="g">GameObject to check</param>
     /// <returns>True if we are over the GameObject</returns>
     public static bool Over(GameObject g)
-    {
+    {	
+		
+		if (g.layer!=0)
+		{
+			bool foundCamera = false;
+			bool inCamera = false;
+			for (int i=0; i<instance.clipCameras.Count; i++)
+			{
+				if (instance.clipCameras[i].cullingMask == 1<<g.layer)
+				{
+					foundCamera = true;
+					if (Input.touches.Length>0)
+					{
+						for (int t=0; t<Input.touches.Length; t++)
+						{
+							inCamera = instance.clipPixelRect[i].Contains(Input.touches[t].position);						
+							if (inCamera)
+								break;
+						}
+					}
+					else
+						inCamera = instance.clipPixelRect[i].Contains(Input.mousePosition);
+				}
+				if (inCamera)
+					break;
+			}
+			
+			if (foundCamera && !inCamera)
+				return false;
+		}
+		
+		
         if (g.collider != null)
         {
 			if (Input.touches.Length>0)
@@ -616,7 +776,7 @@ public class OT : MonoBehaviour
 		if (!isValid) return;
 		instance._Reset();
 	}
-
+		
 	/// <summary>
 	/// Find an animating sprite
 	/// </summary>
@@ -898,7 +1058,18 @@ public class OT : MonoBehaviour
             instance._RegisterContainerLookup(container, oldName);
     }
 
-    /// <summary>
+	/// <summary>
+    /// Get a container using a texture lookup
+    /// </summary>
+    public static OTContainer ContainerByTexture(Texture texture)
+    {
+        if (isValid)
+            return instance._ContainerByTexture(texture);
+        else
+            return null;
+    }    
+		
+	/// <summary>
     /// Get a container using a name lookup
     /// </summary>
     /// <param name="name">Name of sprite container object to find</param>
@@ -1014,6 +1185,17 @@ public class OT : MonoBehaviour
     }
 
     /// <summary>
+    /// Creates a new gameobject cloned from an existing orthello object
+    /// </summary>
+    /// <param name="objectPrototype">Name of object prototype to create</param>
+    /// <returns>Created or pooled GameObject</returns>
+    public static GameObject CreateObject(OTObject o)
+    {
+        if (isValid)
+            return instance._CreateObject(o);
+        return null;
+    }		
+    /// <summary>
     /// Creates a new gameobject from a registered prototype
     /// </summary>
     /// <param name="objectPrototype">Name of object prototype to create</param>
@@ -1034,6 +1216,30 @@ public class OT : MonoBehaviour
     {
         if (isValid)
             return instance._CreateObject(objectPrototype).GetComponent<OTSprite>();
+        return null;
+    }	
+    /// <summary>
+    /// Creates a new OTSprite from a registered prototype at a specific position
+    /// </summary>
+    public static OTSprite CreateSpriteAt(string objectPrototype, Vector2 position)
+    {
+        if (isValid)
+		{
+			OTSprite sprite = instance._CreateObject(objectPrototype).GetComponent<OTSprite>();
+			sprite.position = position;
+            return sprite;
+		}
+        return null;
+    }	
+    /// <summary>
+    /// Creates a new OTSprite cloned from an existing orthello object
+    /// </summary>
+    /// <param name="objectPrototype">Name of object prototype to create</param>
+    /// <returns>Created or pooled OTSprite</returns>
+    public static OTSprite CreateSprite(OTObject o)
+    {
+        if (isValid)
+            return instance._CreateObject(o).GetComponent<OTSprite>();
         return null;
     }
 
@@ -1221,7 +1427,19 @@ public class OT : MonoBehaviour
     OTView _view = null;
 	OTSounds _sound = null;
 	World _world_ = World.WorldSide2D;
-
+	
+	void GetView()
+	{
+        // find view class as child of the OT main class
+        for (int c = 0; c < transform.childCount; c++)
+        {
+            _view = transform.GetChild(c).gameObject.GetComponent<OTView>();
+            if (_view != null)
+                break;
+        }
+        if (view != null) view.InitView();		
+	}
+	
     // Use this for initialization
     void Awake()
     {
@@ -1237,15 +1455,8 @@ public class OT : MonoBehaviour
 		_sound = instance.GetComponent<OTSounds>();
 		if (_sound==null)
 			_sound = instance.gameObject.AddComponent<OTSounds>();
-		
-        // find view class as child of the OT main class
-        for (int c = 0; c < transform.childCount; c++)
-        {
-            _view = transform.GetChild(c).gameObject.GetComponent<OTView>();
-            if (_view != null)
-                break;
-        }
-        if (view != null) view.InitView();
+
+		GetView();
 		
 		_world_ = _world;
 
@@ -1292,8 +1503,142 @@ public class OT : MonoBehaviour
 			
         }
     }
-
-    
+	
+	Camera CloneCamera(Camera cam, string name, int layer)
+	{
+		Camera c = Instantiate(cam) as Camera;
+		c.name = name;
+		if (layer!=0) 
+		{
+			int mask = 1 << layer;
+			c.name += ("-"+layer);
+			c.clearFlags = CameraClearFlags.Nothing;
+			c.depth = layer;
+			c.cullingMask = mask;
+			if ((Camera.main.cullingMask & mask) == mask)
+				Camera.main.cullingMask -= mask;
+		}		
+		
+		AudioListener l = c.GetComponent<AudioListener>();
+		if (l!=null)
+			Destroy(l);
+		
+		return c;		
+	}
+	
+	int clippedIndex(GameObject g)
+	{
+		int idx = clipCameraGO.IndexOf(g);
+		while (idx == -1)
+		{
+			if (g.transform.parent==null)
+				return -1;
+			g = g.transform.parent.gameObject;
+			idx = clipCameraGO.IndexOf(g);			
+		}
+		return idx;
+	}
+	
+	bool _ClippedShowing(GameObject g)
+	{
+		if (g.layer == 0)
+			return true;
+		
+		int idx = clippedIndex(g);
+		if (idx>=0)
+		{
+			Camera c = clipCameras[idx];
+			if (g.renderer!=null)
+			{
+				Rect r = c.pixelRect;
+				Vector3 bl = c.ScreenToWorldPoint(new Vector3(r.xMin,r.yMin,0));
+				Vector3 tr = c.ScreenToWorldPoint(new Vector3(r.xMax+1,r.yMax+1,0));
+				Vector3 cs = (tr-bl) + new Vector3(0,0,3000);
+				Vector2 cc = bl + (cs/2);
+					
+				Bounds cb = new Bounds(cc,cs);
+				return cb.Intersects(g.renderer.bounds);					
+			}
+		}
+		return true;
+	}
+	
+	void _UnClip(GameObject parent)
+	{
+		
+		int idx = clipCameraGO.IndexOf(parent);
+		if (idx>=0)
+		{
+			clipCameraGO.RemoveAt(idx);
+			Camera c = clipCameras[idx];
+			clipCameras.RemoveAt(idx);
+			clipCameraRect.RemoveAt(idx);
+			clipPixelRect.RemoveAt(idx);
+			
+			parent.layer = 0;						
+			OTHelper.ChildrenSetLayer(parent,0,null);
+			Destroy(c.gameObject);
+									
+		}		
+	}
+	
+	List<Camera> clipCameras = new List<Camera>();
+	List<GameObject> clipCameraGO = new List<GameObject>();
+	List<Rect> clipCameraRect = new List<Rect>();
+	List<Rect> clipPixelRect = new List<Rect>();
+	
+	void _ClipMove(GameObject parent, Rect clipRect)
+	{
+		int idx = clipCameraGO.IndexOf(parent);
+		if (idx>=0)
+		{
+			Camera c = clipCameras[idx];
+			Vector2 bl = new Vector2(clipRect.xMin, clipRect.yMin);
+			Vector2 tr = new Vector2(clipRect.xMax+1, clipRect.yMax);
+			Vector2 sbl = Camera.main.WorldToScreenPoint(bl);
+			Vector2 str = Camera.main.WorldToScreenPoint(tr);
+			c.pixelRect = new Rect(sbl.x,sbl.y,str.x - sbl.x, str.y - sbl.y);
+			clipPixelRect[idx] = c.pixelRect;
+			c.transform.position = (Vector3)clipRect.center + new Vector3(0,0,Camera.main.transform.position.z);			
+			c.orthographicSize = (clipRect.height)/2;
+		}
+	}
+	
+	Camera _Clip(Rect clipRect, GameObject parent, int clipLayer, List<GameObject> exclude)	
+	{
+		MeshRenderer mr = parent.GetComponent<MeshRenderer>();		
+		if (mr!=null || parent.transform.childCount > 0)
+		{
+			if (!exclude.Contains(parent))
+				parent.layer = clipLayer;
+						
+			OTHelper.ChildrenSetLayer(parent,clipLayer,exclude);
+			
+			Vector2 bl = new Vector2(clipRect.xMin, clipRect.yMin);
+			Vector2 tr = new Vector2(clipRect.xMax+1, clipRect.yMax);
+			Vector2 sbl = Camera.main.WorldToScreenPoint(bl);
+			Vector2 str = Camera.main.WorldToScreenPoint(tr);
+			
+			Camera c = CloneCamera(Camera.main,"Camera-Clip",clipLayer);	
+			Destroy(c.GetComponent<GUILayer>());
+			Destroy(c.GetComponent("FlareLayer"));
+			c.pixelRect = new Rect(sbl.x,sbl.y,str.x - sbl.x, str.y - sbl.y);
+			c.transform.position = (Vector3)clipRect.center + new Vector3(0,0,Camera.main.transform.position.z);			
+			c.orthographicSize = (clipRect.height)/2;
+	
+			clipCameras.Add(c);
+			clipCameraGO.Add(parent);
+			clipCameraRect.Add(clipRect);
+			clipPixelRect.Add(c.pixelRect);
+			
+			return c;
+						
+		}		
+		return null;
+	}
+	
+	
+	
     public OTMatRef _GetMatRef(string name)
     {
         for (int i = 0; i < materials.Length; i++)
@@ -1316,7 +1661,7 @@ public class OT : MonoBehaviour
 	
 	public void _Passify()
 	{
-		if (isValid && ContainersReady())
+		if (isValid && ContainersReady() && AnimationsReady())
 		{
 			for (int i=0; i<instance.objects.Count; i++)
 				instance.objects[i].passive = true;
@@ -1326,7 +1671,7 @@ public class OT : MonoBehaviour
 		else
 			Invoke("_Passify",0.1f);
 	}
-
+		
 	
     public OTObject[] _ObjectsUnderPoint(Vector2 screenPoint, OTObject[] checkObjects, OTObject[] ignoreObjects)
     {
@@ -1501,9 +1846,9 @@ public class OT : MonoBehaviour
             vp = OT.view.camera.ScreenToWorldPoint(pos) - OT.view.camera.ScreenToWorldPoint(o.position);
  
         if (OT.world == World.WorldTopDown2D)
-            o.dragObject.position += new Vector2(vp.x, vp.z);
+            o.dragObject.worldPosition += new Vector2(vp.x, vp.z);
         else
-            o.dragObject.position += (Vector2)vp;
+            o.dragObject.worldPosition += (Vector2)vp;
  
         o.position = pos;
         o.dragObject.HandleDrag("drag", null);
@@ -1607,6 +1952,22 @@ public class OT : MonoBehaviour
         OTObject hitObject = ObjectUnderPoint(screenPoint, inputObjects.ToArray());
         if (hitObject != null && (hitObject.enabled || hitObject.passive))
 		{
+			
+			if (hitObject.gameObject.layer!=0)
+			{
+				// check if click point is in the clipped area
+				int idx = clippedIndex(hitObject.gameObject);
+				if (idx>=0)
+				{
+					Bounds b = OTHelper.RectToBounds(clipCameraRect[idx]);
+					b.extents += new Vector3(0,0,3000);
+					Vector3 wp = OTHelper.WorldPoint(hitObject.gameObject, hit.point);
+					if (!b.Contains(wp))
+						return;
+						
+				}
+			}
+									
 			if (hitObject.draggable && !OTDragObject.Dragging(hitObject))
 				DragControl(hitObject);				
 			hitObject.OnInput(hit.point);
@@ -1685,7 +2046,7 @@ public class OT : MonoBehaviour
 		if 	(objectsToControl.Contains(o))
 			objectsToControl.Remove(o);
 	}	
-	
+
 	bool passifyAC = false;
     // Update is called once per frame
     void Update()
@@ -1704,7 +2065,7 @@ public class OT : MonoBehaviour
 			_reset = false;
 		}
 		
-		if (passifyAC && ContainersReady())
+		if (passifyAC && ContainersReady() && AnimationsReady())
 			Invoke("PassifyAC",0.1f);
 						
 #if UNITY_EDITOR	
@@ -1883,6 +2244,14 @@ public class OT : MonoBehaviour
 #else
 		bool inObjects = o.gameObject.activeSelf;		
 #endif
+				
+		if (Application.isPlaying && textureResourceFolder!="" && (o is OTSprite) && ((o as OTSprite).image)!=null)
+		{
+			Texture2D tex = OTHelper.ResourceTexture(textureResourceFolder+'/'+(o as OTSprite).image.name);
+			if (tex!=null)
+				(o as OTSprite).texture = tex;
+		}
+		
 					
         if (!objects.Contains(o) && inObjects)
 		{
@@ -1906,7 +2275,14 @@ public class OT : MonoBehaviour
             if (containers[container.name.ToLower()] != container)
                 Debug.LogError("More than one SpriteContainer with name '" + container.name + "'");
         }
-				
+		
+		if (Application.isPlaying && textureResourceFolder!="" && container.texture!=null)
+		{
+			Texture2D tex = OTHelper.ResourceTexture(textureResourceFolder+'/'+container.texture.name);
+			if (tex!=null)
+				container.texture = tex;
+		}
+						
 		foreach (Transform child in transform)
 		{
 			if (child.name.ToLower() == "containers")
@@ -1931,6 +2307,14 @@ public class OT : MonoBehaviour
         }
     }
 
+    OTContainer _ContainerByTexture(Texture texture)
+    {
+		for (int i=0; i<containerList.Count; i++)
+			if (containerList[i].texture == texture)
+				return containerList[i];
+		return null;
+    }
+		
     OTContainer _ContainerByName(string name)
     {
         if (containers.ContainsKey(name.ToLower()))
@@ -2120,28 +2504,44 @@ public class OT : MonoBehaviour
     {
         return _CreateObject(objectProtoType, Application.isPlaying);
     }
+	
+    GameObject _CreateObject(OTObject o)
+    {
+        return _CreateObject(o.name, Application.isPlaying);
+    }
 
     GameObject _CreateObject(string objectProtoType, bool fromPool)
     {
         string proto = objectProtoType.ToLower();
-        if (OTObjectType.lookup.ContainsKey(proto))
+		bool prototypeFound = OTObjectType.lookup.ContainsKey(proto);				
+		OTObject otObject = OT.ObjectByName(objectProtoType);
+        if (prototypeFound || otObject!=null)
         {
             if (!fromPool || !objectPooling)
             {
-                var g = Instantiate(OTObjectType.lookup[proto]) as GameObject;
+				GameObject g;
+				if (prototypeFound)
+				{
+                	g = Instantiate(OTObjectType.lookup[proto]) as GameObject;
+                	g.name = OTObjectType.lookup[proto].name;
+				}
+				else
+				{
+                	g = Instantiate(otObject.gameObject) as GameObject;
+                	g.name = otObject.name;
+				}
 												
 #if UNITY_3_0 || UNITY_3_1 || UNITY_3_2 || UNITY_3_3 || UNITY_3_4 || UNITY_3_5
 				g.SetActiveRecursively(true);
 #else
 				g.SetActive(true);
 #endif
-                g.name = OTObjectType.lookup[proto].name;
                 OTObject o = g.GetComponent<OTObject>();
                 if (o != null)
 				{					
 					if (onInstantiateObject!=null)
 						onInstantiateObject(o);
-										
+					o.enabled = true;
                     o.protoType = objectProtoType;
 					o.InitComponents();
 					if (createPassive)
@@ -2178,10 +2578,17 @@ public class OT : MonoBehaviour
                     GameObject g = gObjects[0];
                     gObjects.RemoveAt(0);
 
-                    OTObject o = g.GetComponent<OTObject>();
-					GameObject gproto = OTObjectType.lookup[proto];
-					if (gproto!=null)
+                    OTObject o = g.GetComponent<OTObject>();					
+					if (otObject!=null)
 					{
+						o.Assign(otObject);
+						if (createPassive)
+							o.passive = true;
+					}
+					else					
+					if (OTObjectType.lookup.ContainsKey(proto))
+					{
+						GameObject gproto = OTObjectType.lookup[proto];
                     	OTObject oproto = gproto.GetComponent<OTObject>();
 						if (o!=null && oproto!=null)
 						{
@@ -2839,7 +3246,7 @@ public class OTDebug
 	public static int maxLines
 	{
 		get
-		{
+	{
 			return _maxLines;
 		}
 		set
@@ -2938,7 +3345,6 @@ public class OTDebug
 		while (debugs.Count>_maxLines)
 			debugs.RemoveAt(debugs.Count-1);				
 	}
-	
 	
 	public static void Show()
 	{
@@ -3132,3 +3538,4 @@ public class OTDebug
 	}
 		
 }
+			

@@ -18,15 +18,6 @@ using System.Collections;
 public class CExample3 : MonoBehaviour {
 
     // sprite prototypes that will be used when creating objects
-    
-    public OTSprite bullet;             
-    // the asteroid prototypes will be de-activated on start
-    
-    public OTAnimatingSprite a1;
-    
-    public OTAnimatingSprite a2;
-    
-    public OTAnimatingSprite a3;
 
     OTAnimatingSprite gun;              // gun sprite reference
     bool initialized = false;           // initialization notifier
@@ -50,26 +41,24 @@ public class CExample3 : MonoBehaviour {
         int t = 1 + (int)Mathf.Floor(Random.value * 3);
         // Determine random size modifier (min-max)
         float s = min + Random.value * (max - min);
-        GameObject g = null;
+		OTSprite sprite = null;
         // Create a new asteroid
         switch (t)
         {
-            case 1: g = OT.CreateObject("asteroid1");
+            case 1: sprite = OT.CreateSprite("asteroid1");
                 break;
-            case 2: g = OT.CreateObject("asteroid2");
+            case 2: sprite = OT.CreateSprite("asteroid2");
                 break;
-            case 3: g = OT.CreateObject("asteroid3");
+            case 3: sprite = OT.CreateSprite("asteroid3");
                 break;
         }
-        if (g != null)
+        if (sprite != null)
         {
-            // Find this new asteroid's animating sprite
-            OTAnimatingSprite sprite = g.GetComponent<OTAnimatingSprite>();
-            // If a base object was provided use it for size scaling
-            if (o != null)
-                sprite.size = o.size * s;
-            else
-                sprite.size = sprite.size * s;
+            // Set sprite's size
+	        if (o != null)
+	            sprite.size = o.size * s;
+	        else
+	            sprite.size = sprite.size * s;
             // Set sprite's random position
             sprite.position = new Vector2(r.xMin + Random.value * r.width, r.yMin + Random.value * r.height);
             // Set sprote's random rotation
@@ -77,12 +66,8 @@ public class CExample3 : MonoBehaviour {
             // Set sprite's name
             sprite.depth = dp++;
             if (dp > 750) dp = 100;
-            // Return new sprite
-			sprite.enabled = true;
-            return sprite;
         }
-        // we did not manage to create a sprite/asteroid
-        return null;
+        return sprite as OTAnimatingSprite;
     }
     
 
@@ -162,7 +147,6 @@ public class CExample3 : MonoBehaviour {
         gun.RotateTowards(OT.view.mouseWorldPosition);
         // Rotate our bullet prototype as well so we will instantiate a
         // 'already rotated' bullet when we shoot
-        bullet.rotation = gun.rotation;
 
         // check if the left mouse button was clicked
         if (Input.GetMouseButtonDown(0))
@@ -171,6 +155,7 @@ public class CExample3 : MonoBehaviour {
             OTSprite nBullet = OT.CreateSprite("bullet");
             // Set bullet's position at approximately the gun's shooting barrel
             nBullet.position = gun.position + (gun.yVector * (gun.size.y / 2));
+        	nBullet.rotation = gun.rotation;
             // Play the gun's shooting animation frameset once
             gun.PlayOnce("shoot");
         }

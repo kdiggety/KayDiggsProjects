@@ -140,12 +140,15 @@ public class OTTween
                 }
                 else
                 {
+					Debug.LogWarning("property or field ["+name+"] could not been found on the target object!");		
                     fromValues.Add(null);
                     fields.Add(null);
                     props.Add(null);
                 }
             }
         }
+		
+		
     }
 
     private void TweenVar(object fromValue, object toValue, OTEase easing, FieldInfo field, PropertyInfo prop)
@@ -171,7 +174,7 @@ public class OTTween
                     toValue = System.Convert.ToInt32(toValue);
 
                 value = (int)easing.ease(time, (int)fromValue, (int)toValue - (int)fromValue, duration);
-                break;
+                break;			
             case "vector2":
                 Vector2 _toValue2 = (Vector2)toValue;
                 Vector2 _fromValue2 = (Vector2)fromValue;
@@ -197,11 +200,13 @@ public class OTTween
                 if ((_toValue3 - _fromValue3).x != 0)
                     _value3.x = easing.ease(time, _fromValue3.x, (_toValue3 - _fromValue3).x, duration);
                 else
-                    _value3.y = _fromValue3.y;
+                    _value3.x = _fromValue3.x;
+			
                 if ((_toValue3 - _fromValue3).y != 0)
                     _value3.y = easing.ease(time, _fromValue3.y, (_toValue3 - _fromValue3).y, duration);
                 else
                     _value3.y = _fromValue3.y;
+			
                 if ((_toValue3 - _fromValue3).z != 0)
                     _value3.z = easing.ease(time, _fromValue3.z, (_toValue3 - _fromValue3).z, duration);
                 else

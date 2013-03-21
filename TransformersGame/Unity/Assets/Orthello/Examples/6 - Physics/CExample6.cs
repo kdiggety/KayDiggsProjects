@@ -14,7 +14,13 @@ using System.Collections;
 
 
 public class CExample6 : MonoBehaviour {
-
+	
+	void Start()
+	{
+		// set gravity manually
+		Physics.gravity = new Vector3(0,-450,0);
+	}
+	
     // rotate a physical static object
     void Rotate(string name)
     {

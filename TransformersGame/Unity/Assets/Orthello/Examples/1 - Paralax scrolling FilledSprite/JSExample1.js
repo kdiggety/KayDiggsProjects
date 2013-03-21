@@ -58,7 +58,7 @@
     }
 
     // Set scroll speed for a specific FilledSprite providing its name
-    function SetScroll(spriteName, scrollSpeed)
+    function SetScroll(spriteName: String, scrollSpeed: Vector2)
     {		
 		// IMPORTANT : if you would assign a value with the declaration like:  
 		//    var sprite = OT.ObjectByName(spriteName);

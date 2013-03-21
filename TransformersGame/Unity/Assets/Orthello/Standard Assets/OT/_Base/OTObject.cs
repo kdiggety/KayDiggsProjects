@@ -487,11 +487,23 @@ public class OTObject : MonoBehaviour
             }
         }
     }
-		
-	public virtual void PassiveUpdate()
+
+	/// <summary>
+	/// Gets or sets the layer id of this object ( and its children )
+	/// </summary>
+	public int layer
 	{
+		get
+		{
+			return gameObject.layer;
+		}
+		set
+		{
+			gameObject.layer = value;
+			OTHelper.ChildrenSetLayer(gameObject,value);
+		}
 	}
-	
+			
 	protected void Changed()
 	{
 		if (onObjectChanged!=null)
@@ -674,6 +686,30 @@ public class OTObject : MonoBehaviour
         }
     }
 	
+	Rect GetRect(bool local)
+	{		
+		if (otRenderer==null)
+			InitComponents();
+		
+		Vector3 cb = otRenderer.bounds.center;
+		Vector3 ce = otRenderer.bounds.extents;
+		
+		if (local && otTransform.parent!=null)
+		{
+			Vector3 ex = otTransform.parent.worldToLocalMatrix.MultiplyPoint3x4(cb + ce);
+			cb = otTransform.parent.worldToLocalMatrix.MultiplyPoint3x4(cb);
+			ce = ex - cb;
+		}
+					
+        Rect r = new Rect(
+            cb.x - ce.x,
+            cb.y - ce.y,
+            (ce.x*2),
+            ce.y*2);
+		
+        return r;
+	}
+	
     /// <summary>
     /// This object's rectangle in world space
     /// </summary>
@@ -681,13 +717,7 @@ public class OTObject : MonoBehaviour
     {
         get
         {
-			Vector3 ce = otRenderer.bounds.center;
-            Rect r = new Rect(
-                ce.x - (size.x / 2),
-                ((OT.world != OT.World.WorldTopDown2D)?ce.y:ce.z) - (size.y / 2),
-                size.x,
-                size.y);
-            return r;
+			return GetRect(false);
         }
     }
 	
@@ -699,16 +729,7 @@ public class OTObject : MonoBehaviour
     {
         get
         {
-			Vector3 ce = otRenderer.bounds.center;
-			if (otTransform.parent!=null)
-				ce = otTransform.parent.worldToLocalMatrix.MultiplyPoint3x4(ce);
-			
-            Rect r = new Rect(
-                ce.x - (size.x / 2),
-                ((OT.world != OT.World.WorldTopDown2D)?ce.y:ce.z) - (size.y / 2),
-                size.x,
-                size.y);
-            return r;
+			return GetRect(true);
         }
     }
 
@@ -799,7 +820,7 @@ public class OTObject : MonoBehaviour
             return _collisionObject;
         }
     }
-	
+		
 	int restoreDepth;
 	float restoreAlpha;
 	public void HandleDrag(string dragCommand, OTObject dropped)
@@ -953,6 +974,10 @@ public class OTObject : MonoBehaviour
         }
         set
         {
+			
+			if (otTransform == null)
+				otTransform = transform;
+
             Vector2 pos = value;
             if (worldBounds.width != 0)
             {
@@ -975,6 +1000,46 @@ public class OTObject : MonoBehaviour
 			
         }
     }
+	
+	/// <summary>
+	/// Activates this object
+	/// </summary>
+	public void Activate()
+	{
+#if UNITY_3_0 || UNITY_3_1 || UNITY_3_2 || UNITY_3_3 || UNITY_3_4 || UNITY_3_5										
+		gameObject.SetActiveRecursively(true);
+#else
+		gameObject.SetActive(true);
+#endif		
+	}
+	
+	/// <summary>
+	/// Deactivates this object
+	/// </summary>
+	public void Deactivate()
+	{
+#if UNITY_3_0 || UNITY_3_1 || UNITY_3_2 || UNITY_3_3 || UNITY_3_4 || UNITY_3_5										
+		gameObject.SetActiveRecursively(false);
+#else
+		gameObject.SetActive(false);
+#endif		
+	}
+
+	/// <summary>
+	/// True if this object is active
+	/// </summary>
+	public bool isActive
+	{
+		get
+		{
+#if UNITY_3_0 || UNITY_3_1 || UNITY_3_2 || UNITY_3_3 || UNITY_3_4 || UNITY_3_5										
+		return gameObject.active;
+#else
+		return gameObject.activeSelf;
+#endif								
+		}
+	}
+	
 	
 	protected virtual void Resized()
 	{
@@ -1348,13 +1413,7 @@ public class OTObject : MonoBehaviour
         set
         {
             _baseOffset = value;
-            Vector2 nOffset = value;
-			
-			if (name == "GardenItem-2")
-			{
-				int a=1;
-			}
-			
+            Vector2 nOffset = value;						
             if (!Vector2.Equals(Vector2.zero, imageSize) && !Vector2.Equals(size, imageSize))
             {
                 float off = pivotPoint.x + 0.5f;
@@ -1882,7 +1941,7 @@ public class OTObject : MonoBehaviour
         return;
     }
     
-    public virtual void OnMouseMove(Vector2 hitPoint)
+    public virtual void OnMouseOver()
     {
         _hitPoint = OT.view.mouseWorldPosition - position;
 
@@ -1957,7 +2016,56 @@ public class OTObject : MonoBehaviour
     {
 		RotateTowards(target.position);
     }
-
+	
+	/// <summary>
+	/// Rotates the towards a specific point with a specific turning rate.
+	/// </summary>
+	public void RotateTowards(Vector2 toPosition, float turnRate, float minEpsilonDegree = 5, float minSpeed = 2, float maxSpeed = 4)
+    {		 		 
+		if (OT.world == OT.World.WorldSide2D)
+		{
+			// vector from the object to target
+			Vector3 toTarget = new Vector3(toPosition.x - position.x, toPosition.y - position.y, 0);
+			 
+			// current object's vector (angle -> vector)
+			var currentAngle1 = -Mathf.Sin(otTransform.rotation.eulerAngles.z * Mathf.Deg2Rad);
+			var currentAngle2 = Mathf.Cos(otTransform.rotation.eulerAngles.z * Mathf.Deg2Rad);
+			Vector3 curr = new Vector3(currentAngle1, currentAngle2, 0);
+			 
+			// getting amount to turn
+			float angle = Vector3.Angle(toTarget, curr);
+			var amount = angle * (Vector3.Dot(Vector3.forward, Vector3.Cross(toTarget, curr)) < 0 ? -1 : 1);
+			
+			 
+			// turning
+			if (Mathf.Abs(amount) > minEpsilonDegree)
+			{
+				amount *= turnRate * Time.deltaTime; // get time independent amount
+				var absAmount = Mathf.Abs(amount);   // abs
+				amount = (absAmount > minSpeed) ? amount: minSpeed*amount/absAmount; // if absAmount is less than minSpeed, use minSpeed*direction
+				amount = (absAmount < maxSpeed) ? amount: maxSpeed*amount/absAmount; // if absAmount is more than maxSpeed, use maxSpeed*direction
+				if (!float.IsNaN(amount))
+					rotation -= amount;
+			}
+			else
+			{
+				if (!float.IsNaN(amount))				
+					rotation -= amount;
+			}
+		} 
+        _rotation = rotation;
+        _rotation_ = _rotation;
+    }
+ 
+	/// <summary>
+	/// Rotates the towards an object with a specific turning rate.
+	/// </summary>
+	public void RotateTowards(OTObject target, float turnRate, float minSpeed, float maxSpeed)
+    {
+		RotateTowards(target.position, turnRate, minSpeed, maxSpeed);
+    }
+ 
+	
     
     public void SetDropped(OTObject o)
     {
@@ -2138,7 +2246,10 @@ public class OTObject : MonoBehaviour
 		
 		if (OT.world == OT.World.WorldTopDown2D)
 			otTransform.localRotation = Quaternion.Euler( new Vector3(90,rotation,0));
-						
+	
+		if (physics == Physics.RigidBody || physics == Physics.NoGravity || physics == Physics.Custom)
+			passiveControl = true;
+		
     }
 
     // -----------------------------------------------------------------
@@ -2147,8 +2258,10 @@ public class OTObject : MonoBehaviour
     protected OTObject copyObject = null;
 	
     
+	bool isStarted = false;
     protected virtual void Start()
-    {								
+    {	
+		isStarted = true;
 		InitComponents();
 		
 		callBackParams = new object[] { this };		
@@ -2247,7 +2360,7 @@ public class OTObject : MonoBehaviour
             }
         }
     }
-	
+		
 	/// <summary>
 	/// Worldbounds of this object to the area of the provided orthello object
 	/// </summary>
@@ -2259,7 +2372,7 @@ public class OTObject : MonoBehaviour
 		
 		// set world bounds
 		worldBounds = new Rect(rect.xMin + dx - expand.x, rect.yMin + dy - expand.y, rect.width - size.x + (expand.x*2), Mathf.Abs(rect.height) - size.y + (expand.y*2));
-		
+						
 	}			
 	public void BoundBy(OTObject o)
 	{
@@ -2284,17 +2397,56 @@ public class OTObject : MonoBehaviour
         }
 	}
 	
+	/// <summary>
+	/// Synchronize this sprite with the sprite's transform
+	/// </summary>
+	/// <remarks>
+	/// Sometimes you want to adjust the transform of a sprite using Translate, or by adjusting the gameObject.transform. Due to
+	/// optimizations and passive mode, this is ignored by Orthello. Use this method to synchronize the orthello sprite with its 
+	/// Transform object. Synchronize is autmaticly called when sprite.physics is set to RigidBody, Nogravity or Custom.
+	/// </remarks>
+	public void Synchronize()
+	{
+		_position = position;
+		_position_ = _position;
+		_rotation = rotation;
+		_rotation_ = rotation;
+	}
+	
+
+	public virtual void PassiveUpdate()
+	{
+		// check if we need to synchronize
+		if (Application.isPlaying && (physics == Physics.RigidBody || physics == Physics.NoGravity || physics == Physics.Custom ))
+			Synchronize();
+	}
+		
     // Update is called once per frame	
 	int dirtyUpdateCycles = 0;					// lets always check all settings the first 5 cycles
     protected virtual void Update()
-    {		
+    {			
         if (!OT.isValid || otTransform == null || gameObject == null || OT.view == null ) return;
+				
+		if (!isStarted && !enabled)
+			Start();
+
+		// check if we need to synchronize
+		if (Application.isPlaying && (physics == Physics.RigidBody || physics == Physics.NoGravity || physics == Physics.Custom ))
+			Synchronize();
 				
         if (!Application.isPlaying || dirtyChecks || OT.dirtyChecks || (dirtyUpdateCycles++<5))
         {
             if (registerInput != _registerInput_ && !registerInput && draggable)
+			{
                 draggable = false;
-
+			
+#if UNITY_EDITOR
+				if (!Application.isPlaying)
+					UnityEditor.PrefabUtility.RecordPrefabInstancePropertyModifications(this);
+#endif
+			}
+			
+			
             if (draggable && !registerInput)
                 _registerInput = true;
 
@@ -2339,8 +2491,7 @@ public class OTObject : MonoBehaviour
         if (isCopy)
             isCopy = false;
 
-		UpdateControllers();
-		
+		UpdateControllers();		
     }
 
     void OnBecameVisible()
@@ -2451,12 +2602,12 @@ public class OTObject : MonoBehaviour
 		
 	public virtual void Dispose()
 	{
-		callBackTargets.Clear();
 		ClearControllers();
 	}
 	    
     protected void OnDestroy()
     {
+		callBackTargets.Clear();
         if (mesh != null)
             DestroyImmediate(mesh);
 
@@ -2503,6 +2654,7 @@ public class OTObject : MonoBehaviour
 			otTransform.parent = null;
 		else
 			otTransform.parent = parent.transform;
+		Update();
 	}	
 	
 	/// <summary>
@@ -2537,12 +2689,27 @@ public class OTObject : MonoBehaviour
 
 }
 
+/// <summary>
+/// Serializable int Vector2
+/// </summary>
 [System.Serializable]
 public class IVector2
 {
+	/// <summary>
+	/// The x value
+	/// </summary>
 	public int x;
+	/// <summary>
+	/// The y value
+	/// </summary>
 	public int y;
-	
+
+	/// <summary>
+	/// a zero vector
+	/// </summary>
+	/// <value>
+	/// The zero.
+	/// </value>
 	public static IVector2 zero
 	{
 		get
@@ -2563,11 +2730,17 @@ public class IVector2
 		this.y = 0;
 	}
 	
+	/// <summary>
+	/// Creates a copy of a vector
+	/// </summary>
 	public IVector2 Clone()
 	{
 		return new IVector2(x,y);
 	}
-		
+
+	/// <summary>
+	/// Determines if two int vectors are equal
+	/// </summary>
 	public bool Equals(IVector2 iv)
 	{
 		return (x == iv.x && y == iv.y);
