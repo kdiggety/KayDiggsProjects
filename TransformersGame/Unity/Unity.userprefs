@@ -1,13 +1,9 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Orthello\Examples\1 - Paralax scrolling FilledSprite\CExample1.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/Character.cs">
     <Files>
-      <File FileName="Assets\Scripts\Character.cs" Line="1" Column="1" />
-      <File FileName="Assets\Scripts\CharacterAnims.cs" Line="1" Column="1" />
-      <File FileName="Assets\Scripts\AudioManager.cs" Line="1" Column="1" />
-      <File FileName="Assets\Scripts\xa.cs" Line="1" Column="1" />
-      <File FileName="Assets\Scripts\Player.cs" Line="48" Column="3" />
-      <File FileName="Assets\Orthello\Examples\1 - Paralax scrolling FilledSprite\CExample1.cs" Line="46" Column="6" />
+      <File FileName="Assets/Orthello/Examples/3 - Shooting Asteroids/CAsteroid3.cs" Line="1" Column="1" />
+      <File FileName="Assets/Scripts/Character.cs" Line="156" Column="43" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

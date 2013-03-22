@@ -146,15 +146,15 @@ public class Character : MonoBehaviour
 		thisTransform.position += new Vector3(vel2.x,vel2.y,0f);
 		
 		
-		// screen wrap
-		if(thisTransform.position.x > 8.35f)
+		/*// screen wrap
+		if(thisTransform.position.x > 10.0f)
 		{
-			thisTransform.position = new Vector3(-8.35f,thisTransform.position.y, 0);
+			thisTransform.position = new Vector3(-10.0f,thisTransform.position.y, 0);
 		}
-		if(thisTransform.position.x < -8.35f)
+		if(thisTransform.position.x < -10.0f)
 		{
-			thisTransform.position = new Vector3(8.35f,thisTransform.position.y, 0);
-		}
+			thisTransform.position = new Vector3(10.0f,thisTransform.position.y, 0);
+		}*/
 	}
 	
 	// ============================== RAYCASTS ============================== 
