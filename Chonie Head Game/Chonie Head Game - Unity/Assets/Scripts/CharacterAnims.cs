@@ -7,7 +7,6 @@ public class CharacterAnims : MonoBehaviour
 	
 	public Transform spriteParent;
 	public OTAnimatingSprite playerSprite;
-	//public tk2dAnimatedSprite playerSprite;
 	
 	private anim currentAnim;
 	private Character character;
@@ -19,17 +18,17 @@ public class CharacterAnims : MonoBehaviour
 	}
 	
 	void Update() 
-	{
-		if(xa.gameOver == true) return;
-		
+	{		
 		// run left
-		if(character.isLeft && character.grounded == true && currentAnim != anim.WalkLeft)
+		if (((character.isLeft == true) || (character.isUp == true)) && (currentAnim != anim.WalkLeft))
 		{
 			currentAnim = anim.WalkLeft;
 			playerSprite.Play("run");
 			spriteParent.localScale = new Vector3(-1,1,1);
 		}
-		if(!character.isLeft && character.grounded == true && currentAnim != anim.StandLeft && character.facingDir == Character.facing.Left)
+		
+		// stand left
+		if((character.isLeft == false) && (character.isUp == false) && (character.isDown == false) && (currentAnim != anim.StandLeft) && (character.facingDir == Character.facing.Left))
 		{
 			currentAnim = anim.StandLeft;
 			playerSprite.Play("stand"); // stand left
@@ -37,30 +36,18 @@ public class CharacterAnims : MonoBehaviour
 		}
 		
 		// run right
-		if(character.isRight && character.grounded && currentAnim != anim.WalkRight)
+		if(((character.isRight == true) || (character.isDown == true)) && (currentAnim != anim.WalkRight))
 		{
 			currentAnim = anim.WalkRight;
 			playerSprite.Play("run");
 			spriteParent.localScale = new Vector3(1,1,1);
 		}
-		if(!character.isRight && character.grounded && currentAnim != anim.StandRight && character.facingDir == Character.facing.Right)
+		
+		// stand right
+		if((character.isRight == false) && (character.isUp == false) && (character.isDown == false) && (currentAnim != anim.StandRight) && (character.facingDir == Character.facing.Right))
 		{
 			currentAnim = anim.StandRight;
-			playerSprite.Play("stand"); // stand left
-			spriteParent.localScale = new Vector3(1,1,1);
-		}
-		
-		// falling
-		if(character.grounded == false && currentAnim != anim.FallLeft && character.facingDir == Character.facing.Left)
-		{
-			currentAnim = anim.FallLeft;
-			playerSprite.Play("jump"); // fall left
-			spriteParent.localScale = new Vector3(-1,1,1);
-		}
-		if(character.grounded == false && currentAnim != anim.FallRight && character.facingDir == Character.facing.Right)
-		{
-			currentAnim = anim.FallRight;
-			playerSprite.Play("jump"); // fall right
+			playerSprite.Play("stand"); // stand right
 			spriteParent.localScale = new Vector3(1,1,1);
 		}
 	}

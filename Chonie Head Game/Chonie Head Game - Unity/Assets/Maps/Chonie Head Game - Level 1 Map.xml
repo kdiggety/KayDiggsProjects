@@ -301,6 +301,7 @@
  </layer>
  <layer name="Furniture" width="17" height="17">
   <properties>
+   <property name="collider" value="collider"/>
    <property name="depth" value="-15"/>
   </properties>
   <data>
