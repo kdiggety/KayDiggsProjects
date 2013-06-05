@@ -29,16 +29,13 @@ public class Character : MonoBehaviour
 	private float maxVelY = 0f;
 			
 	private RaycastHit hitInfo;
-	private float halfMyX = 0.325f; //0.25f;
-	private float halfMyY = 0.5f;//0.375f;
-	[HideInInspector] public float rayDistUp = 0.375f;
+	private float halfMyX = 50.0f;
+	private float halfMyY = 50.0f;
+	[HideInInspector] public float rayDistUp = 50.0f;
 	
 	private float absVel2X;
 	private float absVel2Y;
-	
-	// layer masks
-	protected int groundMask = 1 << 8; // Ground
-		
+			
 	public virtual void Awake()
 	{
 		thisTransform = transform;
@@ -55,8 +52,6 @@ public class Character : MonoBehaviour
 	// Update is called once per frame
 	public virtual void UpdateMovement() 
 	{
-		//if(xa.gameOver == true || alive == false) return;
-		
 		vel.x = 0;
 		vel.y = 0;
 		
@@ -84,7 +79,7 @@ public class Character : MonoBehaviour
 			vel.y = -moveVel;
 		}
 		
-		//UpdateRaycasts();
+		UpdateRaycasts();
 		
 		// apply movement 
 		vel2 = vel * Time.deltaTime;
@@ -93,25 +88,25 @@ public class Character : MonoBehaviour
 		// screen boundary
 		if(thisTransform.position.x > 260.0f)
 		{
-			thisTransform.position = new Vector3(260.0f,thisTransform.position.y, -11.0f);
+			thisTransform.position = new Vector3(260.0f,thisTransform.position.y, -20f);
 		}
 		if(thisTransform.position.x < -260.0f)
 		{
-			thisTransform.position = new Vector3(-260.0f,thisTransform.position.y, -11.0f);
+			thisTransform.position = new Vector3(-260.0f,thisTransform.position.y, -20f);
 		}
-		if(thisTransform.position.y > 260.0f)
+		if(thisTransform.position.y > 230.0f)
 		{
-			thisTransform.position = new Vector3(thisTransform.position.x,260.0f, -11.0f);
+			thisTransform.position = new Vector3(thisTransform.position.x,230.0f, -20f);
 		}
-		if(thisTransform.position.y < -260.0f)
+		if(thisTransform.position.y < -230.0f)
 		{
-			thisTransform.position = new Vector3(thisTransform.position.x,-260.0f, -11.0f);
+			thisTransform.position = new Vector3(thisTransform.position.x,-230.0f, -20f);
 		}
 	}
 	
 	// ============================== RAYCASTS ============================== 
 	
-	/*void UpdateRaycasts()
+	void UpdateRaycasts()
 	{
 		blockedRight = false;
 		blockedLeft = false;
@@ -121,8 +116,10 @@ public class Character : MonoBehaviour
 		absVel2X = Mathf.Abs(vel2.x);
 		absVel2Y = Mathf.Abs(vel2.y);
 		
-		if (Physics.Raycast(new Vector3(thisTransform.position.x-0.25f,thisTransform.position.y,0f), -Vector3.up, out hitInfo, 0.6f+absVel2Y, groundMask) 
-			|| Physics.Raycast(new Vector3(thisTransform.position.x+0.25f,thisTransform.position.y,0f), -Vector3.up, out hitInfo, 0.6f+absVel2Y, groundMask))
+		//print ("Character.UpdateRaycasts - x=" + thisTransform.position.x + ", y=" + thisTransform.position.y + ", absVel2X=" + absVel2X + ", absVel2Y=" + absVel2Y);
+		
+		/*if (Physics.Raycast(new Vector3(thisTransform.position.x-0.25f,thisTransform.position.y,0f), -Vector3.up, out hitInfo, 0.6f+absVel2Y) 
+			|| Physics.Raycast(new Vector3(thisTransform.position.x+0.25f,thisTransform.position.y,0f), -Vector3.up, out hitInfo, 0.6f+absVel2Y))
 		{			
 			// not while jumping so he can pass up thru platforms
 			if(vel.y <= 0)
@@ -131,63 +128,76 @@ public class Character : MonoBehaviour
 				vel.y = 0f; // stop falling			
 				thisTransform.position = new Vector3(thisTransform.position.x,hitInfo.point.y+halfMyY,0f);
 			}
-		}
+		}*/
 		
 		// blocked up
-		if (Physics.Raycast(new Vector3(thisTransform.position.x-0.2f,thisTransform.position.y,0f), Vector3.up, out hitInfo, rayDistUp+absVel2Y, groundMask)
-			|| Physics.Raycast(new Vector3(thisTransform.position.x+0.2f,thisTransform.position.y,0f), Vector3.up, out hitInfo, rayDistUp+absVel2Y, groundMask))
+		if (Physics.Raycast(new Vector3(thisTransform.position.x,thisTransform.position.y,0f), Vector3.up, out hitInfo, halfMyY+absVel2Y))
 		{
+			//print ("Character.UpdateRaycasts - BlockedUp");
 			BlockedUp();
 		}
 		
-		// blocked on right
-		if (Physics.Raycast(new Vector3(thisTransform.position.x,thisTransform.position.y,0f), Vector3.right, out hitInfo, halfMyX+absVel2X, groundMask))
+		// blocked down
+		if (Physics.Raycast(new Vector3(thisTransform.position.x,thisTransform.position.y,0f), -Vector3.up, out hitInfo, halfMyY+absVel2Y))
 		{
+			//print ("Character.UpdateRaycasts - BlockedDown");
+			BlockedDown();
+		}
+		
+		// blocked on right
+		if (Physics.Raycast(new Vector3(thisTransform.position.x,thisTransform.position.y,0f), Vector3.right, out hitInfo, halfMyX+absVel2X))
+		{
+			//print ("Character.UpdateRaycasts - BlockedRight");
 			BlockedRight();
 		}
 		
 		// blocked on left
-		if(Physics.Raycast(new Vector3(thisTransform.position.x,thisTransform.position.y,0f), -Vector3.right, out hitInfo, halfMyX+absVel2X, groundMask))
+		if(Physics.Raycast(new Vector3(thisTransform.position.x,thisTransform.position.y,0f), -Vector3.right, out hitInfo, halfMyX+absVel2X))
 		{
+			//print ("Character.UpdateRaycasts - BlockedLeft");
 			BlockedLeft();
 		}
-	}*/
+		
+		//print ("Character.UpdateRaycasts - hitInfo.collider=" + hitInfo.collider);
+	}
 	
 	void BlockedUp()
 	{
 		if(vel.y > 0)
 		{
-			vel.y = 0f;
 			blockedUp = true;
+			vel.y = 0f;
 		}
 	}
 
 	void BlockedDown()
 	{
-		if(vel.y > 0)
+		if(vel.y < 0)
 		{
-			vel.y = 0f;
 			blockedDown = true;
+			vel.y = 0f;
 		}
 	}
 	
 	void BlockedRight()
 	{
-		if(facingDir == facing.Right || movingDir == moving.Right)
+		//if(facingDir == facing.Right || movingDir == moving.Right)
+		if(vel.x > 0)
 		{
 			blockedRight = true;
 			vel.x = 0f;
-			thisTransform.position = new Vector3(hitInfo.point.x-(halfMyX-0.01f),thisTransform.position.y, 0f); // .01 less than collision width.
+			//thisTransform.position = new Vector3(hitInfo.point.x-(halfMyX-0.01f),thisTransform.position.y, thisTransform.position); // .01 less than collision width.
 		}
 	}
 	
 	void BlockedLeft()
 	{
-		if(facingDir == facing.Left || movingDir == moving.Left)
+		//if(facingDir == facing.Left || movingDir == moving.Left)
+		if(vel.x < 0)
 		{
 			blockedLeft = true;
 			vel.x = 0f;
-			thisTransform.position = new Vector3(hitInfo.point.x+(halfMyX-0.01f),thisTransform.position.y, 0f); // .01 less than collision width.
+			//thisTransform.position = new Vector3(hitInfo.point.x+(halfMyX-0.01f),thisTransform.position.y, thisTransform.position); // .01 less than collision width.
 		}
 	}
 }

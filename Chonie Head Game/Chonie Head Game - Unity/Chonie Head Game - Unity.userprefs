@@ -1,9 +1,10 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Maps\Chonie Head Game - Level 1 Map.xml">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\Character.cs">
     <Files>
-      <File FileName="Assets\Maps\Chonie Head Game - Level 1 Map.xml" Line="1" Column="10" />
-      <File FileName="Assets\Orthello\Examples\Pro 6 - TILED - TileMap Support\TiledSupport-1.xml" Line="14" Column="29" />
+      <File FileName="Assets\Scripts\Character.cs" Line="93" Column="36" />
+      <File FileName="Assets\Scripts\Player.cs" Line="59" Column="5" />
+      <File FileName="Assets\Scripts\CharacterAnims.cs" Line="18" Column="3" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

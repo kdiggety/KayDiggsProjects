@@ -5,6 +5,66 @@
    <property name="" value=""/>
   </properties>
   <image source="Chonie Head - Level 1.jpg" width="709" height="709"/>
+  <tile id="280">
+   <properties>
+    <property name="collider" value="collider"/>
+    <property name="name" value="bed"/>
+   </properties>
+  </tile>
+  <tile id="281">
+   <properties>
+    <property name="collider" value="collider"/>
+    <property name="name" value="bed"/>
+   </properties>
+  </tile>
+  <tile id="282">
+   <properties>
+    <property name="collider" value="collider"/>
+    <property name="name" value="bed"/>
+   </properties>
+  </tile>
+  <tile id="283">
+   <properties>
+    <property name="collider" value="collider"/>
+    <property name="name" value="bed"/>
+   </properties>
+  </tile>
+  <tile id="284">
+   <properties>
+    <property name="collider" value="collider"/>
+    <property name="name" value="bed"/>
+   </properties>
+  </tile>
+  <tile id="302">
+   <properties>
+    <property name="collider" value="collider"/>
+    <property name="name" value="bed"/>
+   </properties>
+  </tile>
+  <tile id="303">
+   <properties>
+    <property name="collider" value="collider"/>
+    <property name="name" value="bed"/>
+   </properties>
+  </tile>
+  <tile id="304">
+   <properties>
+    <property name="collider" value="collider"/>
+    <property name="name" value="bed"/>
+   </properties>
+  </tile>
+  <tile id="305">
+   <properties>
+    <property name="collider" value="collider"/>
+    <property name="name" value="bed"/>
+   </properties>
+  </tile>
+  <tile id="306">
+   <properties>
+    <property name="collider" value="collider"/>
+    <property name="name" value="bed"/>
+   </properties>
+  </tile>
   <tile id="310">
    <properties>
     <property name="collider" value="collider"/>
@@ -14,55 +74,355 @@
   <tile id="311">
    <properties>
     <property name="collider" value="collider"/>
-	<property name="name" value="desk"/>
+    <property name="name" value="desk"/>
+   </properties>
+  </tile>
+  <tile id="312">
+   <properties>
+    <property name="collider" value="collider"/>
+    <property name="name" value="desk"/>
+   </properties>
+  </tile>
+  <tile id="324">
+   <properties>
+    <property name="collider" value="collider"/>
+    <property name="name" value="bed"/>
+   </properties>
+  </tile>
+  <tile id="325">
+   <properties>
+    <property name="collider" value="collider"/>
+    <property name="name" value="bed"/>
+   </properties>
+  </tile>
+  <tile id="326">
+   <properties>
+    <property name="collider" value="collider"/>
+    <property name="name" value="bed"/>
+   </properties>
+  </tile>
+  <tile id="327">
+   <properties>
+    <property name="collider" value="collider"/>
+    <property name="name" value="bed"/>
+   </properties>
+  </tile>
+  <tile id="328">
+   <properties>
+    <property name="collider" value="collider"/>
+    <property name="name" value="bed"/>
    </properties>
   </tile>
   <tile id="332">
    <properties>
     <property name="collider" value="collider"/>
-	<property name="name" value="desk"/>
+    <property name="name" value="desk"/>
    </properties>
   </tile>
   <tile id="333">
    <properties>
     <property name="collider" value="collider"/>
-	<property name="name" value="desk"/>
+    <property name="name" value="desk"/>
+   </properties>
+  </tile>
+  <tile id="334">
+   <properties>
+    <property name="collider" value="collider"/>
+    <property name="name" value="desk"/>
+   </properties>
+  </tile>
+  <tile id="338">
+   <properties>
+    <property name="collider" value="collider"/>
+    <property name="name" value="chair"/>
+   </properties>
+  </tile>
+  <tile id="339">
+   <properties>
+    <property name="collider" value="collider"/>
+    <property name="name" value="chair"/>
+   </properties>
+  </tile>
+  <tile id="346">
+   <properties>
+    <property name="collider" value="collider"/>
+    <property name="name" value="bed"/>
+   </properties>
+  </tile>
+  <tile id="347">
+   <properties>
+    <property name="collider" value="collider"/>
+    <property name="name" value="bed"/>
+   </properties>
+  </tile>
+  <tile id="348">
+   <properties>
+    <property name="collider" value="collider"/>
+    <property name="name" value="bed"/>
+   </properties>
+  </tile>
+  <tile id="349">
+   <properties>
+    <property name="collider" value="collider"/>
+    <property name="name" value="bed"/>
+   </properties>
+  </tile>
+  <tile id="350">
+   <properties>
+    <property name="collider" value="collider"/>
+    <property name="name" value="bed"/>
    </properties>
   </tile>
   <tile id="354">
    <properties>
     <property name="collider" value="collider"/>
-	<property name="name" value="desk"/>
+    <property name="name" value="desk"/>
    </properties>
   </tile>
   <tile id="355">
    <properties>
     <property name="collider" value="collider"/>
-	<property name="name" value="desk"/>
+    <property name="name" value="desk"/>
+   </properties>
+  </tile>
+  <tile id="356">
+   <properties>
+    <property name="collider" value="collider"/>
+    <property name="name" value="desk"/>
+   </properties>
+  </tile>
+  <tile id="360">
+   <properties>
+    <property name="collider" value="collider"/>
+    <property name="name" value="chair"/>
+   </properties>
+  </tile>
+  <tile id="361">
+   <properties>
+    <property name="collider" value="collider"/>
+    <property name="name" value="chair"/>
+   </properties>
+  </tile>
+  <tile id="368">
+   <properties>
+    <property name="collider" value="collider"/>
+    <property name="name" value="bed"/>
+   </properties>
+  </tile>
+  <tile id="369">
+   <properties>
+    <property name="collider" value="collider"/>
+    <property name="name" value="bed"/>
+   </properties>
+  </tile>
+  <tile id="370">
+   <properties>
+    <property name="collider" value="collider"/>
+    <property name="name" value="bed"/>
+   </properties>
+  </tile>
+  <tile id="371">
+   <properties>
+    <property name="collider" value="collider"/>
+    <property name="name" value="bed"/>
+   </properties>
+  </tile>
+  <tile id="372">
+   <properties>
+    <property name="collider" value="collider"/>
+    <property name="name" value="bed"/>
    </properties>
   </tile>
   <tile id="376">
    <properties>
     <property name="collider" value="collider"/>
-	<property name="name" value="desk"/>
+    <property name="name" value="desk"/>
    </properties>
   </tile>
   <tile id="377">
    <properties>
     <property name="collider" value="collider"/>
-	<property name="name" value="desk"/>
+    <property name="name" value="desk"/>
+   </properties>
+  </tile>
+  <tile id="378">
+   <properties>
+    <property name="collider" value="collider"/>
+    <property name="name" value="desk"/>
+   </properties>
+  </tile>
+  <tile id="382">
+   <properties>
+    <property name="collider" value="collider"/>
+    <property name="name" value="chair"/>
+   </properties>
+  </tile>
+  <tile id="383">
+   <properties>
+    <property name="collider" value="collider"/>
+    <property name="name" value="chair"/>
+   </properties>
+  </tile>
+  <tile id="390">
+   <properties>
+    <property name="collider" value="collider"/>
+    <property name="name" value="bed"/>
+   </properties>
+  </tile>
+  <tile id="391">
+   <properties>
+    <property name="collider" value="collider"/>
+    <property name="name" value="bed"/>
+   </properties>
+  </tile>
+  <tile id="392">
+   <properties>
+    <property name="collider" value="collider"/>
+    <property name="name" value="bed"/>
+   </properties>
+  </tile>
+  <tile id="393">
+   <properties>
+    <property name="collider" value="collider"/>
+    <property name="name" value="bed"/>
+   </properties>
+  </tile>
+  <tile id="394">
+   <properties>
+    <property name="collider" value="collider"/>
+    <property name="name" value="bed"/>
    </properties>
   </tile>
   <tile id="398">
    <properties>
     <property name="collider" value="collider"/>
-	<property name="name" value="desk"/>
+    <property name="name" value="desk"/>
    </properties>
   </tile>
   <tile id="399">
    <properties>
     <property name="collider" value="collider"/>
-	<property name="name" value="desk"/>
+    <property name="name" value="desk"/>
+   </properties>
+  </tile>
+  <tile id="400">
+   <properties>
+    <property name="collider" value="collider"/>
+    <property name="name" value="desk"/>
+   </properties>
+  </tile>
+  <tile id="412">
+   <properties>
+    <property name="collider" value="collider"/>
+    <property name="name" value="bed"/>
+   </properties>
+  </tile>
+  <tile id="413">
+   <properties>
+    <property name="collider" value="collider"/>
+    <property name="name" value="bed"/>
+   </properties>
+  </tile>
+  <tile id="414">
+   <properties>
+    <property name="collider" value="collider"/>
+    <property name="name" value="bed"/>
+   </properties>
+  </tile>
+  <tile id="415">
+   <properties>
+    <property name="collider" value="collider"/>
+    <property name="name" value="bed"/>
+   </properties>
+  </tile>
+  <tile id="416">
+   <properties>
+    <property name="collider" value="collider"/>
+    <property name="name" value="bed"/>
+   </properties>
+  </tile>
+  <tile id="430">
+   <properties>
+    <property name="collider" value="collider"/>
+    <property name="name" value="nightstand"/>
+   </properties>
+  </tile>
+  <tile id="431">
+   <properties>
+    <property name="collider" value="collider"/>
+    <property name="name" value="nightstand"/>
+   </properties>
+  </tile>
+  <tile id="434">
+   <properties>
+    <property name="collider" value="collider"/>
+    <property name="name" value="bed"/>
+   </properties>
+  </tile>
+  <tile id="435">
+   <properties>
+    <property name="collider" value="collider"/>
+    <property name="name" value="bed"/>
+   </properties>
+  </tile>
+  <tile id="436">
+   <properties>
+    <property name="collider" value="collider"/>
+    <property name="name" value="bed"/>
+   </properties>
+  </tile>
+  <tile id="437">
+   <properties>
+    <property name="collider" value="collider"/>
+    <property name="name" value="bed"/>
+   </properties>
+  </tile>
+  <tile id="438">
+   <properties>
+    <property name="collider" value="collider"/>
+    <property name="name" value="bed"/>
+   </properties>
+  </tile>
+  <tile id="452">
+   <properties>
+    <property name="collider" value="collider"/>
+    <property name="name" value="nightstand"/>
+   </properties>
+  </tile>
+  <tile id="453">
+   <properties>
+    <property name="collider" value="collider"/>
+    <property name="name" value="nightstand"/>
+   </properties>
+  </tile>
+  <tile id="456">
+   <properties>
+    <property name="collider" value="collider"/>
+    <property name="name" value="bed"/>
+   </properties>
+  </tile>
+  <tile id="457">
+   <properties>
+    <property name="collider" value="collider"/>
+    <property name="name" value="bed"/>
+   </properties>
+  </tile>
+  <tile id="458">
+   <properties>
+    <property name="collider" value="collider"/>
+    <property name="name" value="bed"/>
+   </properties>
+  </tile>
+  <tile id="459">
+   <properties>
+    <property name="collider" value="collider"/>
+    <property name="name" value="bed"/>
+   </properties>
+  </tile>
+  <tile id="460">
+   <properties>
+    <property name="collider" value="collider"/>
+    <property name="name" value="bed"/>
    </properties>
   </tile>
  </tileset>
