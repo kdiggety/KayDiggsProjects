@@ -1,10 +1,15 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\Character.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Orthello\Examples\3 - Shooting Asteroids\CBullet3.cs">
     <Files>
-      <File FileName="Assets\Scripts\Character.cs" Line="93" Column="36" />
-      <File FileName="Assets\Scripts\Player.cs" Line="59" Column="5" />
-      <File FileName="Assets\Scripts\CharacterAnims.cs" Line="18" Column="3" />
+      <File FileName="Assets\Orthello\Standard Assets\OT\_Base\OTObject.cs" Line="1947" Column="1" />
+      <File FileName="Assets\Orthello\Examples\3 - Shooting Asteroids\CAsteroid3.cs" Line="33" Column="82" />
+      <File FileName="Assets\Orthello\Examples\3 - Shooting Asteroids\CExample3.cs" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\Level1.cs" Line="70" Column="23" />
+      <File FileName="Assets\Scripts\Player.cs" Line="54" Column="163" />
+      <File FileName="Assets\Scripts\Character.cs" Line="1" Column="1" />
+      <File FileName="Assets\Orthello\Standard Assets\OT\_Base\OTPB.cs" Line="1" Column="1" />
+      <File FileName="Assets\Orthello\Examples\3 - Shooting Asteroids\CBullet3.cs" Line="89" Column="10" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

@@ -51,11 +51,11 @@ public class Player : Character
 
 	void OnCollisionEnter(Collision other)
 	{
-		//print ("Player.OnCollisionEnter - Collision.collider=" + other.collider.transform.parent);
+		print ("Player.OnCollisionEnter - Collision.collider=" + ((other.collider.transform.parent != null) ? other.collider.transform.parent.name : other.collider.name));
 	}
 	
 	void OnTriggerEnter(Collider other)
 	{
-		//print ("Player.OnTriggerEnter - Collider.collider=" + other.collider.transform.parent);
+		print ("Player.OnTriggerEnter - Collider.collider=" + ((other.collider.transform.parent != null) ? other.collider.transform.parent.name : other.collider.name));
 	}
 }
